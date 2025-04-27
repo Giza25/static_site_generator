@@ -1,8 +1,8 @@
-from textnode import TextNode
+from textnode import TextNode, MDTextType
 
 def main():
-    a = TextNode("Hello World", "Normal Text")
-    b = TextNode("This is Bold", "Bold Text")
+    a = TextNode("Hello World", MDTextType.NORMAL_TEXT)
+    b = TextNode("This is Bold", MDTextType.BOLD_TEXT)
     print(a)
     print(b)
     print(a == b)
