@@ -10,19 +10,42 @@ class HTMLNode():
     def to_html(self):
         raise NotImplementedError("This method is not yet implemented within the class")
     
+    """
+    Converts 'props' attribute to a single string
+    """
     def props_to_html(self):
         props = ""
         if self.props == None:
             return props
         for item in self.props:
             props = f"{props} {item}={self.props[item]}"
-        return props[1:]
+        return props[1:] # Deleting the first space in the output
     
     def __repr__(self):
-        representation = f"""HTMLNode object:
+        representation = (
+f"""HTMLNode object:
 tag = {self.tag}
 value = {self.value}
 children = {self.children}
 properties = {self.props_to_html()}
 """
+        )
         return representation
+    
+
+class LeafNode(HTMLNode):
+    def __init__(self, tag=None, value=None, props=None):
+        if value == None:
+            raise ValueError("LeafNode class object should have a value")
+        super().__init__(tag, value, None, props)
+    
+    def to_html(self):
+        result = ((
+            f"<{self.tag} {self.props_to_html()}>{self.value}</{self.tag}>"
+        ) if self.props else (                                              # Condition to adress the space between the tag and the props
+            f"<{self.tag}>{self.value}</{self.tag}>"
+        )) if self.tag else (                                               # Condition to handle situation where Leaf has no tag
+            self.value
+        )
+        return result
+        
