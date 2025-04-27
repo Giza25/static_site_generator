@@ -1,6 +1,6 @@
 import unittest
 
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 class TestHTMLNode(unittest.TestCase):
     def test_prop1(self):
@@ -78,6 +78,91 @@ Actual: {node.to_html()}\n"""
 f"""Expected: LeafNode class object should have a value
 Actual: {e}\n"""
             )
+            self.assertEqual(str(e), 'LeafNode class object should have a value')
+
+
+
+class TestParentNode(unittest.TestCase):
+    def test_to_html_with_children(self):
+        child_node = LeafNode("span", "child")
+        parent_node = ParentNode("div", [child_node])
+        print(
+f"""Testing ParentNode 'to_html()' method
+Expected: <div><span>child</span></div>
+Actual: {parent_node.to_html()}\n"""
+        )
+        self.assertEqual(parent_node.to_html(), "<div><span>child</span></div>")
+
+    def test_to_html_with_grandchildren(self):
+        grandchild_node = LeafNode("b", "grandchild")
+        child_node = ParentNode("span", [grandchild_node])
+        parent_node = ParentNode("div", [child_node])
+        print(
+f"""Testing ParentNode 'to_html()' method
+Expected: <div><span><b>grandchild</b></span></div>
+Actual: {parent_node.to_html()}\n"""
+        )
+        self.assertEqual(
+        parent_node.to_html(),
+        "<div><span><b>grandchild</b></span></div>",
+        )
+    
+    def test_to_html_with_many_children(self):
+        child_nodes = [
+            LeafNode("a", "child_a", {"href": "https://www.boot.dev"}),
+            LeafNode("b", "child_b"),
+            LeafNode("c", "child_c", {"target": "None"})
+        ]
+        parent_node = ParentNode("div", child_nodes)
+        print(
+f"""Testing ParentNode 'to_html()' method
+Expected: <div><a href=https://www.boot.dev>child_a</a><b>child_b</b><c target=None>child_c</c></div>
+Actual: {parent_node.to_html()}\n"""
+        )
+        self.assertEqual(parent_node.to_html(), "<div><a href=https://www.boot.dev>child_a</a><b>child_b</b><c target=None>child_c</c></div>")
+
+    def test_to_html_with_props(self):
+        child_node = LeafNode("span", "child")
+        parent_node = ParentNode("div", [child_node], {"target": "None"})
+        print(
+f"""Testing ParentNode 'to_html()' method
+Expected: <div target=None><span>child</span></div>
+Actual: {parent_node.to_html()}\n"""
+        )
+        self.assertEqual(parent_node.to_html(), "<div target=None><span>child</span></div>")
+
+    def test_Parent_value1(self):
+        print("Catching ValueError...")
+        try:
+            node = ParentNode()
+        except Exception as e:
+            print(
+f"""Expected: ParentNode class object should have a tag
+Actual: {e}\n"""
+            )
+            self.assertEqual(str(e), 'ParentNode class object should have a tag')
+    
+    def test_Parent_value2(self):
+        print("Catching ValueError...")
+        try:
+            node = ParentNode("a")
+        except Exception as e:
+            print(
+f"""Expected: ParentNode class object should have at least 1 child object
+Actual: {e}\n"""
+            )
+            self.assertEqual(str(e), 'ParentNode class object should have at least 1 child object')
+
+    def test_Parent_value3(self):
+        print("Catching ValueError...")
+        try:
+            node = ParentNode("a", [])
+        except Exception as e:
+            print(
+f"""Expected: ParentNode class object should have at least 1 child object
+Actual: {e}\n"""
+            )
+            self.assertEqual(str(e), 'ParentNode class object should have at least 1 child object')
 
 if __name__ == "__main__":
     unittest.main()

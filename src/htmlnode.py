@@ -40,12 +40,32 @@ class LeafNode(HTMLNode):
         super().__init__(tag, value, None, props)
     
     def to_html(self):
-        result = ((
-            f"<{self.tag} {self.props_to_html()}>{self.value}</{self.tag}>"
-        ) if self.props else (                                              # Condition to adress the space between the tag and the props
-            f"<{self.tag}>{self.value}</{self.tag}>"
-        )) if self.tag else (                                               # Condition to handle situation where Leaf has no tag
+        result = (
             self.value
+        ) if not self.tag else ((                                               # Condition to handle situation where Leaf has no tag
+            f"<{self.tag}>{self.value}</{self.tag}>"
+        ) if not self.props else (                                              # Condition to adress the space between the tag and the props
+            f"<{self.tag} {self.props_to_html()}>{self.value}</{self.tag}>"
+        ))
+        return result
+    
+
+class ParentNode(HTMLNode):
+    def __init__(self, tag=None, children=None, props=None):
+        if tag == None:
+            raise ValueError("ParentNode class object should have a tag")
+        if children == None or children == []:
+            raise ValueError("ParentNode class object should have at least 1 child object")
+        super().__init__(tag, None, children, props)
+    
+    def to_html(self):
+        children_to_html = ""
+        for child in self.children:
+            children_to_html = f"{children_to_html}{child.to_html()}"
+        result = (
+            f"<{self.tag}>{children_to_html}</{self.tag}>"
+        ) if not self.props else (
+            f"<{self.tag} {self.props_to_html()}>{children_to_html}</{self.tag}>"
         )
         return result
         
