@@ -1,13 +1,13 @@
-from enum import Enum
+from enum import Flag, auto
 from htmlnode import LeafNode
 
-class MDTextType(Enum):
-    NORMAL_TEXT = "Normal Text"
-    BOLD_TEXT = "Bold Text"
-    ITALIC_TEXT = "Italic Text"
-    CODE_TEXT = "Code Text"
-    LINK = "Link"
-    IMAGE = "Image"
+class MDTextType(Flag):
+    NORMAL_TEXT = auto()
+    BOLD_TEXT = auto()
+    ITALIC_TEXT = auto()
+    CODE_TEXT = auto()
+    LINK = auto()
+    IMAGE = auto()
 
 class TextNode():
     def __init__(self, text: str, text_type: MDTextType, url=None):
@@ -21,9 +21,11 @@ class TextNode():
             self.url == other.url)
     
     def __repr__(self):
-        return f"TextNode({self.text}, {self.text_type.value}, {self.url})"
+        return f"TextNode(\"{self.text}\", {self.text_type}, {self.url})"
     
     def text_node_to_html_node(self):
+        if MDTextType.BOLD_TEXT in self.text_type and MDTextType.ITALIC_TEXT in self.text_type:
+            return LeafNode("b", LeafNode("i", self.text).to_html())
         match self.text_type:
             case MDTextType.NORMAL_TEXT:
                 return LeafNode(None, self.text)

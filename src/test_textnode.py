@@ -55,6 +55,17 @@ Actual: {html_node.to_html()}\n"""
         self.assertEqual(html_node.tag, "i")
         self.assertEqual(html_node.value, "This is in italic")
 
+    def test_bold_and_italic(self):
+        node = TextNode("This is both bold and italic", (MDTextType.ITALIC_TEXT, MDTextType.BOLD_TEXT))
+        html_node = node.text_node_to_html_node()
+        print(
+f"""Testing TextNode 'text_node_to_html_node()' method
+Expected: <b><i>This is both bold and italic</i></b>
+Actual: {html_node.to_html()}\n"""
+        )
+        self.assertEqual(html_node.tag, "b")
+        self.assertEqual(html_node.value, "<i>This is both bold and italic</i>")
+
     def test_code(self):
         node = TextNode("This is a code", MDTextType.CODE_TEXT)
         html_node = node.text_node_to_html_node()
