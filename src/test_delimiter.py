@@ -1,5 +1,5 @@
 import unittest
-from delimiter import split_nodes_delimiter
+from delimiter import split_nodes_delimiter, extract_md_images, extract_md_links
 from textnode import TextNode, MDTextType
 
 class TestDelimiter(unittest.TestCase):
@@ -130,6 +130,113 @@ class TestDelimiter(unittest.TestCase):
         print(f"Actual: {nodes}")
         self.assertEqual(len(nodes), 1)
         self.assertEqual(nodes[0].text_type, MDTextType.BOLD_TEXT)
+
+class testImagesLinks(unittest.TestCase):
+    def test_image1(self):
+        matches = extract_md_images(
+            "This is an image ![image](https://i.redd.it/v8gm7jc4uyye1.png)"
+        )
+        print(
+f"""
+Testing extract_md_images function - basic case
+Input: This is an image ![image](https://i.redd.it/v8gm7jc4uyye1.png)
+Expected: [('image', 'https://i.redd.it/v8gm7jc4uyye1.png')]
+Output: {matches}
+"""
+        )
+        self.assertListEqual(matches, [('image', 'https://i.redd.it/v8gm7jc4uyye1.png')])
+
+    def test_multiple_images(self):
+        text = "Multiple images: ![img1](https://example.com/img1.jpg) and ![img2](https://example.com/img2.png)"
+        matches = extract_md_images(text)
+        print(
+f"""
+Testing extract_md_images function - multiple images
+Input: {text}
+Expected: [('img1', 'https://example.com/img1.jpg'), ('img2', 'https://example.com/img2.png')]
+Output: {matches}
+"""
+        )
+        self.assertListEqual(matches, [('img1', 'https://example.com/img1.jpg'), ('img2', 'https://example.com/img2.png')])
+
+    def test_no_images(self):
+        text = "This is a text without any images"
+        matches = extract_md_images(text)
+        print(
+f"""
+Testing extract_md_images function - no images
+Input: {text}
+Expected: []
+Output: {matches}
+"""
+        )
+        self.assertListEqual(matches, [])
+
+    def test_invalid_image_syntax(self):
+        text = "Invalid image syntax: ![image(https://example.com/img.jpg) and [image](https://example.com/img.jpg)"
+        matches = extract_md_images(text)
+        print(
+f"""
+Testing extract_md_images function - invalid syntax
+Input: {text}
+Expected: []
+Output: {matches}
+"""
+        )
+        self.assertListEqual(matches, [])
+
+    def test_link1(self):
+        matches = extract_md_links(
+            "This is a link [link](https://regexr.com)"
+        )
+        print(
+f"""
+Testing extract_md_links function - basic case
+Input: This is a link [link](https://regexr.com)
+Expected: [('link', 'https://regexr.com')]
+Output: {matches}
+"""
+        )
+        self.assertListEqual(matches, [('link', 'https://regexr.com')])
+
+    def test_multiple_links(self):
+        text = "Multiple links: [link1](https://example.com) and [link2](https://example.org)"
+        matches = extract_md_links(text)
+        print(
+f"""
+Testing extract_md_links function - multiple links
+Input: {text}
+Expected: [('link1', 'https://example.com'), ('link2', 'https://example.org')]
+Output: {matches}
+"""
+        )
+        self.assertListEqual(matches, [('link1', 'https://example.com'), ('link2', 'https://example.org')])
+
+    def test_no_links(self):
+        text = "This is a text without any links"
+        matches = extract_md_links(text)
+        print(
+f"""
+Testing extract_md_links function - no links
+Input: {text}
+Expected: []
+Output: {matches}
+"""
+        )
+        self.assertListEqual(matches, [])
+
+    def test_invalid_link_syntax(self):
+        text = "Invalid link syntax: [link(https://example.com) and ![link](https://example.com)"
+        matches = extract_md_links(text)
+        print(
+f"""
+Testing extract_md_links function - invalid syntax
+Input: {text}
+Expected: []
+Output: {matches}
+"""
+        )
+        self.assertListEqual(matches, [])
 
 if __name__ == "__main__":
     unittest.main()

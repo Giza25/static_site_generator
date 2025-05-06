@@ -1,3 +1,4 @@
+import re
 from textnode import MDTextType, TextNode
 
 DELIMETERS = {
@@ -37,3 +38,12 @@ def split_nodes_delimiter(*old_nodes: TextNode, delimiter, text_type: MDTextType
                 new_node.append(get_node(old_node_text_splitted[i], text_type))
     
     return new_node
+
+def extract_md_images(text):
+    images = re.findall(r"\!\[(\w+)\]\((https?:\/\/\w+(?:.\w+)+\/\w+.\w+)\)", text)
+    return images
+
+def extract_md_links(text):
+    links = re.findall(r"(?<!!)\[(\w+)\]\((https?:\/\/\w+(?:.\w+)+(?:))\/{0,1}\)", text)
+    return links
+
