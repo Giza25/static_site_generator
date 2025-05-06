@@ -1,5 +1,5 @@
 import unittest
-from delimiter import split_nodes_delimiter, extract_md_images, extract_md_links
+from delimiter import split_nodes_delimiter, extract_md_images, extract_md_links, split_nodes_link
 from textnode import TextNode, MDTextType
 
 class TestDelimiter(unittest.TestCase):
@@ -237,6 +237,77 @@ Output: {matches}
 """
         )
         self.assertListEqual(matches, [])
+
+class testDelimiterImagesLinks(unittest.TestCase):
+    def test_node_with_text(self):
+        print("\n=== Testing basic link splitting ===")
+        old_nodes = [
+            TextNode("This is a text with a [link](https://www.boot.dev)", MDTextType.NORMAL_TEXT)
+        ]
+        new_nodes = split_nodes_link(*old_nodes)
+        print(
+f"""
+Testing split_nodes_link function
+Expected: [TextNode("This is a text with a ", MDTextType.NORMAL_TEXT, None), TextNode("link", MDTextType.LINK, "https://www.boot.dev")]
+Actual: {new_nodes}
+"""
+)
+        self.assertEqual(str(new_nodes), "[TextNode(\"This is a text with a \", MDTextType.NORMAL_TEXT, None), TextNode(\"link\", MDTextType.LINK, https://www.boot.dev)]")
+
+    def test_multiple_links(self):
+        print("\n=== Testing multiple links splitting ===")
+        old_nodes = [
+            TextNode("Text with [link1](https://example.com) and [link2](https://example.org)", MDTextType.NORMAL_TEXT)
+        ]
+        new_nodes = split_nodes_link(*old_nodes)
+        print(f"Input: {old_nodes}")
+        print("Expected: Multiple nodes with two links and surrounding text")
+        print(f"Actual: {new_nodes}")
+        self.assertEqual(len(new_nodes), 4)  # Text + link1 + text + link2
+        self.assertEqual(new_nodes[1].text, "link1")
+        self.assertEqual(new_nodes[1].url, "https://example.com")
+        self.assertEqual(new_nodes[3].text, "link2")
+        self.assertEqual(new_nodes[3].url, "https://example.org")
+
+    def test_no_links(self):
+        print("\n=== Testing text with no links ===")
+        old_nodes = [
+            TextNode("This is a text without any links", MDTextType.NORMAL_TEXT)
+        ]
+        new_nodes = split_nodes_link(*old_nodes)
+        print(f"Input: {old_nodes}")
+        print(f"Expected: [TextNode(\"This is a text without any links\", MDTextType.NORMAL_TEXT, None)]")
+        print(f"Actual: {new_nodes}")
+        self.assertEqual(len(new_nodes), 1)
+        self.assertEqual(new_nodes[0].text, "This is a text without any links")
+        self.assertEqual(new_nodes[0].text_type, MDTextType.NORMAL_TEXT)
+
+    def test_non_normal_text_node(self):
+        print("\n=== Testing already formatted text node ===")
+        old_nodes = [
+            TextNode("[link](https://example.com)", MDTextType.BOLD_TEXT)
+        ]
+        new_nodes = split_nodes_link(*old_nodes)
+        print(f"Input: {old_nodes}")
+        print(f"Expected: [TextNode(\"[link](https://example.com)\", MDTextType.BOLD_TEXT, None)]")
+        print(f"Actual: {new_nodes}")
+        self.assertEqual(len(new_nodes), 1)
+        self.assertEqual(new_nodes[0].text_type, MDTextType.BOLD_TEXT)
+
+    def test_empty_text_between_links(self):
+        print("\n=== Testing empty text between links ===")
+        old_nodes = [
+            TextNode("[link1](https://example.com)[link2](https://example.org)", MDTextType.NORMAL_TEXT)
+        ]
+        new_nodes = split_nodes_link(*old_nodes)
+        print(f"Input: {old_nodes}")
+        print("Expected: Two link nodes with empty text node between")
+        print(f"Actual: {new_nodes}")
+        self.assertEqual(len(new_nodes), 2)
+        self.assertEqual(new_nodes[0].text, "link1")
+        self.assertEqual(new_nodes[0].url, "https://example.com")
+        self.assertEqual(new_nodes[1].text, "link2")
+        self.assertEqual(new_nodes[1].url, "https://example.org")
 
 if __name__ == "__main__":
     unittest.main()
