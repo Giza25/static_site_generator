@@ -32,19 +32,20 @@ def split_nodes_delimiter(*old_nodes: TextNode, delimiter, text_type: MDTextType
 
         # assigning node type to every splitted bit of text
         for i in range(len(old_node_text_splitted)):
-            if i % 2 == 0:
-                new_node.append(get_node(old_node_text_splitted[i], DELIMETERS[current_delimiter]))
-            else:
-                new_node.append(get_node(old_node_text_splitted[i], text_type))
+            if old_node_text_splitted[i] != '':
+                if i % 2 == 0:
+                    new_node.append(get_node(old_node_text_splitted[i], DELIMETERS[current_delimiter]))
+                else:
+                    new_node.append(get_node(old_node_text_splitted[i], text_type))
     
     return new_node
 
 def extract_md_images(text):
-    images = re.findall(r"\!\[(\w+)\]\((https?:\/\/\w+(?:.\w+)+\/\w+.\w+)\)", text)
+    images = re.findall(r"\!\[((?:\w+\s*)+)\]\((https?:\/\/\w+(?:.\w+)+\/\w+.\w+)\)", text)
     return images
 
 def extract_md_links(text):
-    links = re.findall(r"(?<!!)\[(\w+)\]\((https?:\/\/\w+(?:.\w+)+(?:))\/{0,1}\)", text)
+    links = re.findall(r"(?<!!)\[((?:\w+\s*)+)\]\((https?:\/\/\w+(?:.\w+)+(?:))\/{0,1}\)", text)
     return links
 
 def split_nodes_link(*old_nodes: TextNode):
@@ -97,4 +98,11 @@ def split_nodes_image(*old_nodes: TextNode):
     
     return new_node
 
-
+def split_markdown(text: str):
+    nodes = [get_node(text, MDTextType.NORMAL_TEXT)]
+    nodes = split_nodes_delimiter(*nodes, delimiter='`', text_type=MDTextType.CODE_TEXT)
+    nodes = split_nodes_image(*nodes)
+    nodes = split_nodes_link(*nodes)
+    nodes = split_nodes_delimiter(*nodes, delimiter="**", text_type=MDTextType.BOLD_TEXT)
+    nodes = split_nodes_delimiter(*nodes, delimiter="_", text_type=MDTextType.ITALIC_TEXT)
+    return nodes

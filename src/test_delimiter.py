@@ -1,5 +1,5 @@
 import unittest
-from delimiter import split_nodes_delimiter, extract_md_images, extract_md_links, split_nodes_image, split_nodes_link
+from delimiter import split_markdown, split_nodes_delimiter, extract_md_images, extract_md_links, split_nodes_image, split_nodes_link
 from textnode import TextNode, MDTextType
 
 class TestDelimiter(unittest.TestCase):
@@ -79,9 +79,9 @@ class TestDelimiter(unittest.TestCase):
         print(f"Expected: {expected}")
         nodes = split_nodes_delimiter(node, delimiter="`", text_type=MDTextType.CODE_TEXT)
         print(f"Actual: {nodes}")
-        self.assertEqual(len(nodes), 5)
+        self.assertEqual(len(nodes), 4)
         self.assertTrue(all(n.text_type == MDTextType.CODE_TEXT for n in [nodes[1], nodes[3]]))
-        self.assertTrue(all(n.text_type == MDTextType.NORMAL_TEXT for n in [nodes[0], nodes[2], nodes[4]]))
+        self.assertTrue(all(n.text_type == MDTextType.NORMAL_TEXT for n in [nodes[0], nodes[2]]))
 
     def test_split_delimiter_no_delimiters(self):
         print("\n=== Testing text with no delimiters ===")
@@ -116,9 +116,7 @@ class TestDelimiter(unittest.TestCase):
         print(f"Expected: {expected}")
         nodes = split_nodes_delimiter(node, delimiter="`", text_type=MDTextType.CODE_TEXT)
         print(f"Actual: {nodes}")
-        self.assertEqual(len(nodes), 3)
-        self.assertEqual(nodes[1].text, "")
-        self.assertEqual(nodes[1].text_type, MDTextType.CODE_TEXT)
+        self.assertEqual(len(nodes), 2)
 
     def test_non_normal_text_node(self):
         print("\n=== Testing already formatted text node ===")
@@ -378,6 +376,96 @@ Actual: {new_nodes}
         self.assertEqual(new_nodes[0].url, "https://example.com/img1.jpg")
         self.assertEqual(new_nodes[1].text, "img2")
         self.assertEqual(new_nodes[1].url, "https://example.com/img2.png")
+
+class testSplitMarkdown(unittest.TestCase):
+    def test_split_markdown(self):
+        print("\n=== Testing split_markdown basic functionality ===")
+        text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        nodes = split_markdown(text)
+        print(f"Input: {text}")
+        print(f"Output: {nodes}")
+        
+        self.assertEqual(len(nodes), 10)
+        self.assertEqual(nodes[0].text, "This is ")
+        self.assertEqual(nodes[0].text_type, MDTextType.NORMAL_TEXT)
+        self.assertEqual(nodes[1].text, "text")
+        self.assertEqual(nodes[1].text_type, MDTextType.BOLD_TEXT)
+        self.assertEqual(nodes[2].text, " with an ")
+        self.assertEqual(nodes[2].text_type, MDTextType.NORMAL_TEXT)
+        self.assertEqual(nodes[3].text, "italic")
+        self.assertEqual(nodes[3].text_type, MDTextType.ITALIC_TEXT)
+        self.assertEqual(nodes[4].text, " word and a ")
+        self.assertEqual(nodes[4].text_type, MDTextType.NORMAL_TEXT)
+        self.assertEqual(nodes[5].text, "code block")
+        self.assertEqual(nodes[5].text_type, MDTextType.CODE_TEXT)
+        self.assertEqual(nodes[6].text, " and an ")
+        self.assertEqual(nodes[6].text_type, MDTextType.NORMAL_TEXT)
+        self.assertEqual(nodes[7].text, "obi wan image")
+        self.assertEqual(nodes[7].text_type, MDTextType.IMAGE)
+        self.assertEqual(nodes[7].url, "https://i.imgur.com/fJRm4Vk.jpeg")
+        self.assertEqual(nodes[8].text, " and a ")
+        self.assertEqual(nodes[8].text_type, MDTextType.NORMAL_TEXT)
+        self.assertEqual(nodes[9].text, "link")
+        self.assertEqual(nodes[9].text_type, MDTextType.LINK)
+        self.assertEqual(nodes[9].url, "https://boot.dev")
+
+    def test_split_markdown_nested(self):
+        print("\n=== Testing split_markdown with nested formatting ===")
+        text = "This is **bold with _italic_ inside** text"
+        nodes = split_markdown(text)
+        print(f"Input: {text}")
+        print(f"Output: {nodes}")
+        
+        self.assertEqual(len(nodes), 3)
+        self.assertEqual(nodes[0].text, "This is ")
+        self.assertEqual(nodes[0].text_type, MDTextType.NORMAL_TEXT)
+        self.assertEqual(nodes[1].text, "bold with _italic_ inside")
+        self.assertEqual(nodes[1].text_type, MDTextType.BOLD_TEXT)
+        self.assertEqual(nodes[2].text, " text")
+        self.assertEqual(nodes[2].text_type, MDTextType.NORMAL_TEXT)
+
+    def test_split_markdown_empty(self):
+        print("\n=== Testing split_markdown with empty text ===")
+        text = ""
+        nodes = split_markdown(text)
+        print(f"Input: empty string")
+        print(f"Output: {nodes}")
+        
+        self.assertEqual(len(nodes), 0)
+
+    def test_split_markdown_no_formatting(self):
+        print("\n=== Testing split_markdown with no markdown formatting ===")
+        text = "This is just plain text without any formatting"
+        nodes = split_markdown(text)
+        print(f"Input: {text}")
+        print(f"Output: {nodes}")
+        
+        self.assertEqual(len(nodes), 1)
+        self.assertEqual(nodes[0].text, text)
+        self.assertEqual(nodes[0].text_type, MDTextType.NORMAL_TEXT)
+
+    def test_split_markdown_multiple_same_format(self):
+        print("\n=== Testing split_markdown with multiple instances of same formatting ===")
+        text = "**Bold** normal **bold again** and _italic_ then _more italic_"
+        nodes = split_markdown(text)
+        print(f"Input: {text}")
+        print(f"Output: {nodes}")
+        
+        self.assertEqual(len(nodes), 7)
+        self.assertEqual(nodes[0].text, "Bold")
+        self.assertEqual(nodes[0].text_type, MDTextType.BOLD_TEXT)
+        self.assertEqual(nodes[1].text, " normal ")
+        self.assertEqual(nodes[1].text_type, MDTextType.NORMAL_TEXT)
+        self.assertEqual(nodes[2].text, "bold again")
+        self.assertEqual(nodes[2].text_type, MDTextType.BOLD_TEXT)
+        self.assertEqual(nodes[3].text, " and ")
+        self.assertEqual(nodes[3].text_type, MDTextType.NORMAL_TEXT)
+        self.assertEqual(nodes[4].text, "italic")
+        self.assertEqual(nodes[4].text_type, MDTextType.ITALIC_TEXT)
+        self.assertEqual(nodes[5].text, " then ")
+        self.assertEqual(nodes[5].text_type, MDTextType.NORMAL_TEXT)
+        self.assertEqual(nodes[6].text, "more italic")
+        self.assertEqual(nodes[6].text_type, MDTextType.ITALIC_TEXT)
 
 if __name__ == "__main__":
     unittest.main()
