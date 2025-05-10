@@ -1,5 +1,5 @@
 import unittest
-from delimiter import split_nodes_delimiter, extract_md_images, extract_md_links, split_nodes_link
+from delimiter import split_nodes_delimiter, extract_md_images, extract_md_links, split_nodes_image, split_nodes_link
 from textnode import TextNode, MDTextType
 
 class TestDelimiter(unittest.TestCase):
@@ -239,7 +239,7 @@ Output: {matches}
         self.assertListEqual(matches, [])
 
 class testDelimiterImagesLinks(unittest.TestCase):
-    def test_node_with_text(self):
+    def test_node_with_link(self):
         print("\n=== Testing basic link splitting ===")
         old_nodes = [
             TextNode("This is a text with a [link](https://www.boot.dev)", MDTextType.NORMAL_TEXT)
@@ -308,6 +308,76 @@ Actual: {new_nodes}
         self.assertEqual(new_nodes[0].url, "https://example.com")
         self.assertEqual(new_nodes[1].text, "link2")
         self.assertEqual(new_nodes[1].url, "https://example.org")
+
+    def test_node_with_image(self):
+        print("\n=== Testing basic image splitting ===")
+        old_nodes = [
+            TextNode("This is a text with an ![image](https://i.redd.it/v8gm7jc4uyye1.png)", MDTextType.NORMAL_TEXT)
+        ]
+        new_nodes = split_nodes_image(*old_nodes)
+        print(
+f"""
+Testing split_nodes_link function
+Expected: [TextNode("This is a text with an ", MDTextType.NORMAL_TEXT, None), TextNode("image", MDTextType.IMAGE, "https://i.redd.it/v8gm7jc4uyye1.png")]
+Actual: {new_nodes}
+"""
+)
+        self.assertEqual(str(new_nodes), "[TextNode(\"This is a text with an \", MDTextType.NORMAL_TEXT, None), TextNode(\"image\", MDTextType.IMAGE, https://i.redd.it/v8gm7jc4uyye1.png)]")
+
+    def test_multiple_images(self):
+        print("\n=== Testing multiple images splitting ===")
+        old_nodes = [
+            TextNode("Images: ![img1](https://example.com/img1.jpg) and ![img2](https://example.com/img2.png)", MDTextType.NORMAL_TEXT)
+        ]
+        new_nodes = split_nodes_image(*old_nodes)
+        print(f"Input: {old_nodes}")
+        print("Expected: Multiple nodes with two images and surrounding text")
+        print(f"Actual: {new_nodes}")
+        self.assertEqual(len(new_nodes), 4)  # Text + img1 + text + img2
+        self.assertEqual(new_nodes[1].text, "img1")
+        self.assertEqual(new_nodes[1].url, "https://example.com/img1.jpg")
+        self.assertEqual(new_nodes[3].text, "img2")
+        self.assertEqual(new_nodes[3].url, "https://example.com/img2.png")
+
+    def test_no_images(self):
+        print("\n=== Testing text with no images ===")
+        old_nodes = [
+            TextNode("This is a text without any images", MDTextType.NORMAL_TEXT)
+        ]
+        new_nodes = split_nodes_image(*old_nodes)
+        print(f"Input: {old_nodes}")
+        print(f"Expected: [TextNode(\"This is a text without any images\", MDTextType.NORMAL_TEXT, None)]")
+        print(f"Actual: {new_nodes}")
+        self.assertEqual(len(new_nodes), 1)
+        self.assertEqual(new_nodes[0].text, "This is a text without any images")
+        self.assertEqual(new_nodes[0].text_type, MDTextType.NORMAL_TEXT)
+
+    def test_non_normal_text_node_image(self):
+        print("\n=== Testing already formatted text node with image ===")
+        old_nodes = [
+            TextNode("![image](https://example.com/img.jpg)", MDTextType.BOLD_TEXT)
+        ]
+        new_nodes = split_nodes_image(*old_nodes)
+        print(f"Input: {old_nodes}")
+        print(f"Expected: [TextNode(\"![image](https://example.com/img.jpg)\", MDTextType.BOLD_TEXT, None)]")
+        print(f"Actual: {new_nodes}")
+        self.assertEqual(len(new_nodes), 1)
+        self.assertEqual(new_nodes[0].text_type, MDTextType.BOLD_TEXT)
+
+    def test_empty_text_between_images(self):
+        print("\n=== Testing empty text between images ===")
+        old_nodes = [
+            TextNode("![img1](https://example.com/img1.jpg)![img2](https://example.com/img2.png)", MDTextType.NORMAL_TEXT)
+        ]
+        new_nodes = split_nodes_image(*old_nodes)
+        print(f"Input: {old_nodes}")
+        print("Expected: Two image nodes with no text between")
+        print(f"Actual: {new_nodes}")
+        self.assertEqual(len(new_nodes), 2)
+        self.assertEqual(new_nodes[0].text, "img1")
+        self.assertEqual(new_nodes[0].url, "https://example.com/img1.jpg")
+        self.assertEqual(new_nodes[1].text, "img2")
+        self.assertEqual(new_nodes[1].url, "https://example.com/img2.png")
 
 if __name__ == "__main__":
     unittest.main()

@@ -72,4 +72,29 @@ def split_nodes_link(*old_nodes: TextNode):
     
     return new_node
 
+def split_nodes_image(*old_nodes: TextNode):
+    new_node = list()
+
+    for old_node in old_nodes:
+        if old_node.text_type != MDTextType.NORMAL_TEXT:
+            new_node.append(old_node)
+            continue
+        
+        images = extract_md_images(old_node.text)
+
+        old_node_text_splitted = [old_node.text]
+        for image in images:
+            separator = f"![{image[0]}]({image[1]})"
+            last = old_node_text_splitted.pop()
+            old_node_text_splitted = old_node_text_splitted + last.split(separator, maxsplit=2)
+        
+        if old_node_text_splitted[0] != "":
+            new_node.append(get_node(old_node_text_splitted[0], MDTextType.NORMAL_TEXT))
+        for i in range(len(old_node_text_splitted) - 1):
+            new_node.append(get_node(images[i][0], MDTextType.IMAGE, images[i][1]))
+            if old_node_text_splitted[i + 1] != "":
+                new_node.append(get_node(old_node_text_splitted[i + 1], MDTextType.NORMAL_TEXT))
+    
+    return new_node
+
 
