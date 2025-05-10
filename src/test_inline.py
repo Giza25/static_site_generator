@@ -129,7 +129,7 @@ class TestDelimiter(unittest.TestCase):
         self.assertEqual(len(nodes), 1)
         self.assertEqual(nodes[0].text_type, MDTextType.BOLD_TEXT)
 
-class testImagesLinks(unittest.TestCase):
+class TestImagesLinks(unittest.TestCase):
     def test_image1(self):
         matches = extract_md_images(
             "This is an image ![image](https://i.redd.it/v8gm7jc4uyye1.png)"
@@ -236,7 +236,7 @@ Output: {matches}
         )
         self.assertListEqual(matches, [])
 
-class testDelimiterImagesLinks(unittest.TestCase):
+class TestDelimiterImagesLinks(unittest.TestCase):
     def test_node_with_link(self):
         print("\n=== Testing basic link splitting ===")
         old_nodes = [
@@ -377,7 +377,7 @@ Actual: {new_nodes}
         self.assertEqual(new_nodes[1].text, "img2")
         self.assertEqual(new_nodes[1].url, "https://example.com/img2.png")
 
-class testSplitMarkdown(unittest.TestCase):
+class TestSplitMarkdown(unittest.TestCase):
     def test_split_markdown(self):
         print("\n=== Testing split_markdown basic functionality ===")
         text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
