@@ -1,5 +1,5 @@
 import unittest
-from delimiter import split_markdown, split_nodes_delimiter, extract_md_images, extract_md_links, split_nodes_image, split_nodes_link
+from inline import split_markdown, split_nodes_delimiter, extract_md_images, extract_md_links, split_nodes_image, split_nodes_link
 from textnode import TextNode, MDTextType
 
 class TestDelimiter(unittest.TestCase):
