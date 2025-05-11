@@ -23,6 +23,8 @@ def markdown_to_html(markdown: str) -> HTMLNode:
         if block_type == BlockType.HEADING:
             process_heading(block, html_node)
             continue
+        elif block_type == BlockType.PARAGRAPH:
+            process_paragraph(block, html_node)
         block_text = get_block_text(block, block_type)
         
     return html_node
@@ -98,3 +100,10 @@ def process_heading(block: str, parent_html: HTMLNode) -> None:
     heading_nodes = split_markdown(get_heading_text(block))
     for node in heading_nodes:
         html_heading.children.append(node.text_node_to_html_node())
+
+def process_paragraph(block: str, parent_html: HTMLNode) -> None:
+    html_paragraph = ParentNode("p", list(), None)
+    parent_html.children.append(html_paragraph)
+    paragraph_nodes = split_markdown(block)
+    for node in paragraph_nodes:
+        html_paragraph.children.append(node.text_node_to_html_node())

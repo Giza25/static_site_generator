@@ -96,7 +96,25 @@ class TestMarkdownToHtml(unittest.TestCase):
     def test_heading_base(self):
         md = """
 ### This is a header with a **bold** text and a `code` and an _italic_ texts as well
+
+## This is another heading
 """
         node = markdown_to_html(md)
         html = node.to_html()
-        print(html)
+        print(f"""
+Input: {md}
+Output: {html}
+""")
+        
+    def test_paragraph_base(self):
+        md = """
+This is a paragraph of text with **bold**, _italic_
+and
+`code` texts
+"""
+        node = markdown_to_html(md)
+        html = node.to_html()
+        print(f"""
+Input: {md}
+Output: {html}
+""")
