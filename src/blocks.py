@@ -47,7 +47,7 @@ def block_to_block_type(block: str) -> BlockType:
     """
     if re.match(r'#{1,6} ', block) and len(block.splitlines()) == 1:
         return BlockType.HEADING
-    elif len(re.findall(r'^(```)|(```)$', block), flags=re.MULTILINE) == 2:
+    elif len(re.findall(r'^(```)|(```)$', block, flags=re.MULTILINE)) == 2:
         return BlockType.CODE
     elif re.fullmatch(r'(> (?:.+)\n?)+', block):
         return BlockType.QUOTE
@@ -63,8 +63,6 @@ def get_block_text(block: str, block_type: BlockType) -> list[str]:
     match block_type:
         case BlockType.PARAGRAPH:
             result.append(block)
-        case BlockType.HEADING:
-            result.append(get_heading_text(block))
         case BlockType.QUOTE:
             lines = block.splitlines()
             for line in lines:
@@ -97,6 +95,6 @@ def process_heading(block: str, parent_html: HTMLNode) -> None:
     html_tag = f"h{heading_count}"
     html_heading = ParentNode(html_tag, list(), None)
     parent_html.children.append(html_heading)
-    heading_nodes = split_markdown(get_block_text(block, BlockType.HEADING)[0])
+    heading_nodes = split_markdown(get_heading_text(block))
     for node in heading_nodes:
         html_heading.children.append(node.text_node_to_html_node())
