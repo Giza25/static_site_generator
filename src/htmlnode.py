@@ -1,5 +1,3 @@
-from functools import reduce
-
 class HTMLNode():
     def __init__(self, tag=None, value=None, children=None, props=None):
         self.tag = tag
@@ -52,13 +50,13 @@ class LeafNode(HTMLNode):
 
 class ParentNode(HTMLNode):
     def __init__(self, tag=None, children=None, props=None):
-        if tag == None:
-            raise ValueError("ParentNode class object should have a tag")
-        if children == None or children == []:
-            raise ValueError("ParentNode class object should have at least 1 child object")
         super().__init__(tag, None, children, props)
     
     def to_html(self):
+        if self.tag == None:
+            raise ValueError("ParentNode class object should have a tag")
+        if self.children == None or self.children == []:
+            raise ValueError("ParentNode class object should have at least 1 child object")
         children_to_html = ""
         for child in self.children:
             children_to_html = f"{children_to_html}{child.to_html()}"

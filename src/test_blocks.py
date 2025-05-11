@@ -1,5 +1,5 @@
 import unittest
-from blocks import markdown_to_blocks, BlockType, block_to_block_type
+from blocks import markdown_to_blocks, BlockType, block_to_block_type, markdown_to_html
 
 class TestMDToBlocks(unittest.TestCase):
     def test_markdown_to_blocks(self):
@@ -90,3 +90,13 @@ print('hello world')
         block = markdown_to_blocks(md)
         block_type = block_to_block_type(block[0])
         self.assertNotEqual(block_type, BlockType.HEADING)
+
+
+class TestMarkdownToHtml(unittest.TestCase):
+    def test_heading_base(self):
+        md = """
+### This is a header with a **bold** text and a `code` and an _italic_ texts as well
+"""
+        node = markdown_to_html(md)
+        html = node.to_html()
+        print(html)

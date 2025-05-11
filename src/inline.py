@@ -98,7 +98,7 @@ def split_nodes_image(*old_nodes: TextNode):
     
     return new_node
 
-def split_markdown(text: str):
+def split_markdown(text: str) -> list[TextNode]:
     nodes = [get_node(text, MDTextType.NORMAL_TEXT)]
     nodes = split_nodes_delimiter(*nodes, delimiter='`', text_type=MDTextType.CODE_TEXT)
     nodes = split_nodes_image(*nodes)
