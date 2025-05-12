@@ -118,3 +118,31 @@ and
 Input: {md}
 Output: {html}
 """)
+        
+    def test_code_base(self):
+        md = """
+```
+```# This is a block of random `code` with **mixed** _markdown_ that should be unprocessed```
+print("Hello World")
+```
+"""
+        node = markdown_to_html(md)
+        html = node.to_html()
+        print(f"""
+Input: {md}
+Output: {html}
+""")
+        
+    def test_quote_base(self):
+        md = """
+> This is a quote
+> With several lines
+> And a text with **some** _markdown_
+
+"""
+        node = markdown_to_html(md)
+        html = node.to_html()
+        print(f"""
+Input: {md}
+Output: {html}
+""")
