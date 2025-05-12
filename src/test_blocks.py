@@ -138,7 +138,6 @@ Output: {html}
 > This is a quote
 > With several lines
 > And a text with **some** _markdown_
-
 """
         node = markdown_to_html(md)
         html = node.to_html()
