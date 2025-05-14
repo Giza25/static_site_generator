@@ -1,6 +1,6 @@
-from genericpath import isdir
 import os
 import shutil
+import re
 
 def copy_contents(path: str = ""):
     source_path = f"./static/{path}"
@@ -14,6 +14,14 @@ def copy_contents(path: str = ""):
             copy_contents(os.path.join(path, content))
         else:
             shutil.copy(os.path.join(source_path, content), os.path.join(target_path, content))
+
+def extract_title(text: str):
+    text = text.lstrip()
+    if not re.match(r"^# ", text):
+        raise Exception("No titles were found")
+    title = text.splitlines()[0].rstrip().lstrip("# ")
+    return title
+
 
 def main():
     copy_contents()

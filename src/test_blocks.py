@@ -1,5 +1,6 @@
 import unittest
 from blocks import markdown_to_blocks, BlockType, block_to_block_type, markdown_to_html
+from main import extract_title
 
 class TestMDToBlocks(unittest.TestCase):
     def test_markdown_to_blocks(self):
@@ -24,6 +25,12 @@ This is the same paragraph on a new line
                 "- This is a list\n- with items",
             ],
         )
+
+    def test_extract_title(self):
+        md = """
+        # Title
+        with some text"""
+        print(extract_title(md))
 
 class TestBlockToBlockType(unittest.TestCase):
     def test_paragraph(self):
