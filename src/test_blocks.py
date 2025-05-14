@@ -143,7 +143,7 @@ Output: {html}
     def test_quote_base(self):
         md = """
 > This is a quote
-> With several lines
+> 
 > And a text with **some** _markdown_
 """
         node = markdown_to_html(md)

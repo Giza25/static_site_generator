@@ -64,7 +64,7 @@ def block_to_block_type(block: str) -> BlockType:
         return BlockType.HEADING
     elif len(re.findall(r'^(```)|(```)$', block)) == 2:
         return BlockType.CODE
-    elif re.fullmatch(r'(> (?:.+)\n?)+', block):
+    elif re.fullmatch(r'(> (?:.*)\n?)+', block):
         return BlockType.QUOTE
     elif re.fullmatch(r'(- (?:.*)\n?)+', block):
         return BlockType.UNORDERED_LIST
