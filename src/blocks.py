@@ -1,4 +1,6 @@
 import re
+
+from hamcrest import none
 from textnode import MDTextType, TextNode
 from htmlnode import HTMLNode, LeafNode, ParentNode
 from inline import split_markdown
@@ -21,14 +23,18 @@ def markdown_to_html(markdown: str) -> HTMLNode:
         block_text = get_block_text(block, block_type)
         if block_type == BlockType.HEADING:
             process_heading(block, html_node)
-            continue
-        elif block_type == BlockType.PARAGRAPH:
-            process_paragraph(block, html_node)
         elif block_type == BlockType.CODE:
             html_code = LeafNode("code", *block_text, None)
-            html_node.children.append(html_code)
+            html_pre = ParentNode("pre", [html_code], None)
+            html_node.children.append(html_pre)
         elif block_type == BlockType.QUOTE:
             process_quote(block_text, html_node)
+        elif block_type == BlockType.UNORDERED_LIST:
+            process_unordered(block_text, html_node)
+        elif block_type == BlockType.ORDERED_LIST:
+            process_ordered(block_text, html_node)
+        else:
+            process_paragraph(block, html_node)
 
         
     return html_node
@@ -60,7 +66,7 @@ def block_to_block_type(block: str) -> BlockType:
         return BlockType.CODE
     elif re.fullmatch(r'(> (?:.+)\n?)+', block):
         return BlockType.QUOTE
-    elif re.fullmatch(r'(- (?:.+)\n?)+', block):
+    elif re.fullmatch(r'(- (?:.*)\n?)+', block):
         return BlockType.UNORDERED_LIST
     elif re.fullmatch(r'(\d+\. (?:.+)\n?)+', block):
         return BlockType.ORDERED_LIST
@@ -83,7 +89,7 @@ def get_block_text(block: str, block_type: BlockType) -> list[str]:
         case BlockType.ORDERED_LIST:
             lines = block.splitlines()
             for line in lines:
-                result.append(re.match(r"([^\d+. ])(.*)", line))
+                result.append(re.sub(r"\d+\. ", "", line))
         case BlockType.CODE:
             result.append(block.strip("```"))
     return result
@@ -124,3 +130,23 @@ def process_quote(block: list[str], parent_html: HTMLNode) -> None:
     quote_nodes = split_markdown(block_text)
     for node in quote_nodes:
         html_quote.children.append(node.text_node_to_html_node())
+
+def process_unordered(block: list[str], parent_html: HTMLNode) -> None:
+    html_list_parent = ParentNode("ul", list(), None)
+    parent_html.children.append(html_list_parent)
+    for element in block:
+        html_list_child = ParentNode("li", list(), None)
+        html_list_parent.children.append(html_list_child)
+        element_nodes = split_markdown(element)
+        for node in element_nodes:
+            html_list_child.children.append(node.text_node_to_html_node())
+
+def process_ordered(block: list[str], parent_html: HTMLNode) -> None:
+    html_list_parent = ParentNode("ol", list(), None)
+    parent_html.children.append(html_list_parent)
+    for element in block:
+        html_list_child = ParentNode("li", list(), None)
+        html_list_parent.children.append(html_list_child)
+        element_nodes = split_markdown(element)
+        for node in element_nodes:
+            html_list_child.children.append(node.text_node_to_html_node())
