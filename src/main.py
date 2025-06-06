@@ -31,8 +31,9 @@ def generate_page(from_path: str, dest_path: str, template_path: str):
         template_html = template_file.read()
         title = extract_title(md)
         contents_nodes = markdown_to_html(md)
-        template_html.replace("{{ Title }}", title)
-        template_html.replace("{{ Content }}", contents_nodes.to_html())
+        contents_html = contents_nodes.to_html()
+        template_html = template_html.replace('{{ Title }}', title)
+        template_html = template_html.replace('{{ Content }}', contents_html)
         destination_file.write(template_html)
 
 def main():

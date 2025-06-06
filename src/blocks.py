@@ -1,6 +1,5 @@
 import re
 
-from hamcrest import none
 from textnode import MDTextType, TextNode
 from htmlnode import HTMLNode, LeafNode, ParentNode
 from inline import split_markdown
