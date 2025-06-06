@@ -70,7 +70,10 @@ def split_nodes_link(*old_nodes: TextNode):
         if old_node_text_splitted[0] != "":
             new_node.append(get_node(old_node_text_splitted[0], MDTextType.NORMAL_TEXT))
         for i in range(len(old_node_text_splitted) - 1):
-            new_node.append(get_node(links[i][0], MDTextType.LINK, links[i][1]))
+            link_list = [links[i][0], links[i][1]]
+            if links[i][2] and links[i][3]:
+                link_list = [links[i][2], links[i][3]]
+            new_node.append(get_node(link_list[0], MDTextType.LINK, link_list[1]))
             if old_node_text_splitted[i + 1] != "":
                 new_node.append(get_node(old_node_text_splitted[i + 1], MDTextType.NORMAL_TEXT))
     
@@ -98,7 +101,10 @@ def split_nodes_image(*old_nodes: TextNode):
         if old_node_text_splitted[0] != "":
             new_node.append(get_node(old_node_text_splitted[0], MDTextType.NORMAL_TEXT))
         for i in range(len(old_node_text_splitted) - 1):
-            new_node.append(get_node(images[i][0], MDTextType.IMAGE, images[i][1]))
+            image_list = [images[i][0], images[i][1]]
+            if images[i][2] and images[i][3]:
+                image_list = [images[i][2], images[i][3]]
+            new_node.append(get_node(image_list[0], MDTextType.IMAGE, image_list[1]))
             if old_node_text_splitted[i + 1] != "":
                 new_node.append(get_node(old_node_text_splitted[i + 1], MDTextType.NORMAL_TEXT))
     
