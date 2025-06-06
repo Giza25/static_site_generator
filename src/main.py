@@ -1,3 +1,4 @@
+from genericpath import isfile
 import os
 import shutil
 import re
@@ -24,6 +25,16 @@ def extract_title(text: str):
     title = text.splitlines()[0].rstrip().lstrip("# ")
     return title
 
+def generate_page_recursively(dir_path_content: str, dir_path_destination: str, template_path: str):
+    contents = os.listdir(dir_path_content)
+    for content in contents:
+        if os.path.isfile(os.path.join(dir_path_content, content)):
+            content_name = os.path.splitext(content)
+            generate_page(os.path.join(dir_path_content, content), os.path.join(dir_path_destination, content_name[0] + ".html"), template_path)
+        else:
+            os.mkdir(os.path.join(dir_path_destination, content))
+            generate_page_recursively(os.path.join(dir_path_content, content), os.path.join(dir_path_destination, content), template_path)
+
 def generate_page(from_path: str, dest_path: str, template_path: str):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     with open(from_path) as md_file, open(template_path) as template_file, open(dest_path, "w") as destination_file:
@@ -38,6 +49,6 @@ def generate_page(from_path: str, dest_path: str, template_path: str):
 
 def main():
     copy_contents()
-    generate_page("./content/index.md", "./public/index.html", "./template.html")
+    generate_page_recursively("./content", "./public", "./template.html")
 
 main()
