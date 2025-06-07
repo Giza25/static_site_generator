@@ -16,7 +16,7 @@ class HTMLNode():
         if self.props == None:
             return props
         for item in self.props:
-            props = f"{props} {item}={self.props[item]}"
+            props = f"{props} {item}=\"{self.props[item]}\""
         return props[1:] # Deleting the first space in the output
     
     def __repr__(self):
