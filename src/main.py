@@ -14,7 +14,7 @@ def copy_contents(target: str = "public", path: str = ""):
     content_list = os.listdir(source_path)
     for content in content_list:
         if os.path.isdir(os.path.join(source_path, content)):
-            copy_contents(path=os.path.join(path, content))
+            copy_contents(target ,path=os.path.join(path, content))
         else:
             shutil.copy(os.path.join(source_path, content), os.path.join(target_path, content))
 

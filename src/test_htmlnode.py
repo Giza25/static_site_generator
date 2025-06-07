@@ -22,10 +22,10 @@ Actual: '{node_props}'\n"""
         node_props = node.props_to_html()
         print(
 f"""Testing 'props_to_html()' method. 
-Expecting: 'href=https://www.google.com target=_blank'. 
+Expecting: 'href="https://www.google.com" target=_blank'. 
 Actual: '{node_props}'\n"""
 )
-        self.assertEqual(node_props, "href=https://www.google.com target=_blank")
+        self.assertEqual(node_props, "href=\"https://www.google.com\" target=\"_blank\"")
 
     def test_repr(self):
         props = {
@@ -58,7 +58,7 @@ f"""Testing LeafNode 'to_html()' method
 Expecting: <a href=https://github.com/Giza25/static_site_generator/tree/main>This is a link!</a>
 Actual: {node.to_html()}\n"""
         )
-        self.assertEqual(node.to_html(), "<a href=https://github.com/Giza25/static_site_generator/tree/main>This is a link!</a>")
+        self.assertEqual(node.to_html(), "<a href=\"https://github.com/Giza25/static_site_generator/tree/main\">This is a link!</a>")
 
     def test_leaf_to_html_p3(self):
         node = LeafNode(None, "This is just a plain text", {"prop": "A random prop"})
@@ -116,10 +116,10 @@ Actual: {parent_node.to_html()}\n"""
         parent_node = ParentNode("div", child_nodes)
         print(
 f"""Testing ParentNode 'to_html()' method
-Expected: <div><a href=https://www.boot.dev>child_a</a><b>child_b</b><c target=None>child_c</c></div>
+Expected: <div><a href="https://www.boot.dev">child_a</a><b>child_b</b><c target="None">child_c</c></div>
 Actual: {parent_node.to_html()}\n"""
         )
-        self.assertEqual(parent_node.to_html(), "<div><a href=https://www.boot.dev>child_a</a><b>child_b</b><c target=None>child_c</c></div>")
+        self.assertEqual(parent_node.to_html(), "<div><a href=\"https://www.boot.dev\">child_a</a><b>child_b</b><c target=\"None\">child_c</c></div>")
 
     def test_to_html_with_props(self):
         child_node = LeafNode("span", "child")
@@ -129,7 +129,7 @@ f"""Testing ParentNode 'to_html()' method
 Expected: <div target=None><span>child</span></div>
 Actual: {parent_node.to_html()}\n"""
         )
-        self.assertEqual(parent_node.to_html(), "<div target=None><span>child</span></div>")
+        self.assertEqual(parent_node.to_html(), "<div target=\"None\"><span>child</span></div>")
 
     def test_Parent_value1(self):
         print("Catching ValueError...")

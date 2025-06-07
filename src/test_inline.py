@@ -138,11 +138,11 @@ class TestImagesLinks(unittest.TestCase):
 f"""
 Testing extract_md_images function - basic case
 Input: This is an image ![image](https://i.redd.it/v8gm7jc4uyye1.png)
-Expected: [('image', 'https://i.redd.it/v8gm7jc4uyye1.png')]
+Expected: [('image', 'https://i.redd.it/v8gm7jc4uyye1.png', '', '')]
 Output: {matches}
 """
         )
-        self.assertListEqual(matches, [('image', 'https://i.redd.it/v8gm7jc4uyye1.png')])
+        self.assertListEqual(matches, [('image', 'https://i.redd.it/v8gm7jc4uyye1.png', '', '')])
 
     def test_multiple_images(self):
         text = "Multiple images: ![img1](https://example.com/img1.jpg) and ![img2](https://example.com/img2.png)"
@@ -155,7 +155,7 @@ Expected: [('img1', 'https://example.com/img1.jpg'), ('img2', 'https://example.c
 Output: {matches}
 """
         )
-        self.assertListEqual(matches, [('img1', 'https://example.com/img1.jpg'), ('img2', 'https://example.com/img2.png')])
+        self.assertListEqual(matches, [('img1', 'https://example.com/img1.jpg', '', ''), ('img2', 'https://example.com/img2.png', '', '')])
 
     def test_no_images(self):
         text = "This is a text without any images"
@@ -191,11 +191,11 @@ Output: {matches}
 f"""
 Testing extract_md_links function - basic case
 Input: This is a link [link](https://regexr.com)
-Expected: [('link', 'https://regexr.com')]
+Expected: [('link', 'https://regexr.com', '', '')]
 Output: {matches}
 """
         )
-        self.assertListEqual(matches, [('link', 'https://regexr.com')])
+        self.assertListEqual(matches, [('link', 'https://regexr.com', '', '')])
 
     def test_multiple_links(self):
         text = "Multiple links: [link1](https://example.com) and [link2](https://example.org)"
@@ -204,11 +204,11 @@ Output: {matches}
 f"""
 Testing extract_md_links function - multiple links
 Input: {text}
-Expected: [('link1', 'https://example.com'), ('link2', 'https://example.org')]
+Expected: [('link1', 'https://example.com', '', ''), ('link2', 'https://example.org', '', '')]
 Output: {matches}
 """
         )
-        self.assertListEqual(matches, [('link1', 'https://example.com'), ('link2', 'https://example.org')])
+        self.assertListEqual(matches, [('link1', 'https://example.com', '', ''), ('link2', 'https://example.org', '', '')])
 
     def test_no_links(self):
         text = "This is a text without any links"
