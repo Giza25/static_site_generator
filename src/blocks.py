@@ -90,7 +90,7 @@ def get_block_text(block: str, block_type: BlockType) -> list[str]:
             for line in lines:
                 result.append(re.sub(r"\d+\. ", "", line))
         case BlockType.CODE:
-            result.append(block.strip("```"))
+            result.append(block.strip("```").strip("\n"))
     return result
 
 
